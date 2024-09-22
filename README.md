@@ -1,2 +1,2 @@
-# finance-tracker
-Finance tracker project for Code for Impact Hackathon 2024
+# mental-health-tracker
+A mental health tracker for teens (Code for Impact Hackathon 2024)
