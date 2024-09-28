@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask import request
+from bcrypt import gensalt, hashpw
 
 #Create flask
 app = Flask(__name__)
@@ -20,6 +21,7 @@ class User(db.Model):
     id = db.Column(db.String(3), primary_key=True)
     username = db.Column(db.String(30), unique=True, nullable=False)
     mood = db.Column(db.String(30), nullable=False)
+    password = db.Column(db.String(128), nullable=False)
 
     def __repr__(self):
         return f'<User: {self.username}, Mood: {self.mood}>'
@@ -34,7 +36,10 @@ def add_user():
     if not data['id']:
         return jsonify({"error": "Invalid id"}), 400
 
-    new_user = User(id=data['id'], username=data['username'], mood=data['mood'])
+    # Hash the password before storing it in the database
+    hashed_password = hashpw(data['password'].encode('utf-8'), gensalt()).decode('utf-8')
+
+    new_user = User(id=data['id'], username=data['username'], mood=data['mood'], password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
     return jsonify({"message": "User added successfully"}), 201
@@ -45,8 +50,10 @@ def update_user(user_id):
     user = User.query.get(user_id)
     if user:
         data = request.get_json()
-        user.username = data['username']
-        user.mood = data['mood']
+        if 'username' in data:
+            user.username = data['username']
+        if 'mood' in data:
+            user.mood = data['mood']
         db.session.commit()
         return jsonify({"message": "User updated successfully"}), 200
     else:
