@@ -73,3 +73,6 @@ nosetests.xml
 *.DS_Store
 *.egg
 *.pyo
+
+
+bun.lockb
