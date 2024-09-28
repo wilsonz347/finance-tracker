@@ -1,36 +1,42 @@
 
-//will need to update the endpointss
+//will need to update the endpoints
 import react, { useState } from "react";
-function fetchapi(){
-    const [data, setdata] = useState([]);
-    const [newitem, setnewitem] = useState('');
-    const [loggedin, setlogin] = useState(false);
+function FetchApi(){
+    const [data, setData] = useState([]);
+    const [newItem, setNewItem] = useState('');
+    const [loggedIn, setLogin] = useState(false);
     const [username, password] = useState('');
 
-    const fetchdata = async () => {
+    useEffect(() => {
+        if (loggedIn) {
+            FetchData();
+        }
+    }, [loggedIn]);
+
+    const FetchData = async () => {
         try {
           const response = await fetch('/api/data'); 
-          const jsondata = await response.json();
-          setdata(jsondata.data);
+          const jsonData = await response.json();
+          setData(jsonData.data);
         } catch (error) {
           console.error('Error fetching data:', error);
         }
       };
 
-    const postdata = async () => {
+    const postData = async () => {
         try {
           const response = await fetch('/api/data', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ item: newitem })
+            body: JSON.stringify({ item: newItem })
           });
     
           if (response.ok) {
             console.log('item added');
-            setnewitem('');
-            fetchdata();
+            setNewItem('');
+            FetchData();
           } else {
             console.error('Error adding item');
           }
@@ -39,7 +45,7 @@ function fetchapi(){
         }
       };
 
-    const handlelogin = async () => {
+    const handleLogin = async () => {
         try {
             const response = await fetch('/api/login', {
                 method: 'POST',
@@ -52,7 +58,7 @@ function fetchapi(){
 
             if (response.ok) {
                 console.log(data.message);
-                setlogin(true);
+                setLogin(true);
               } else {
                 console.error(data.message);
               }
@@ -68,4 +74,4 @@ function fetchapi(){
     );
 }
 
-export default fetchapi;
+export default FetchApi;
