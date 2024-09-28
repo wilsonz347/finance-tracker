@@ -25,14 +25,22 @@ def generate_unique_id():
             return user_id
 
 class User(db.Model):
-    id = db.Column(db.String(5), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), nullable=False)
-    #mood = db.Column(db.String(30), nullable=False)
 
     def __repr__(self):
-        return f'<User: {self.username}, Mood: {self.mood}>'
+        return f'<ID: {self.id}, User: {self.username}, Email: {self.email}>'
+
+class Item(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    mood = db.Column(db.String(30), nullable=False)
+    writing = db.Column(db.Text, nullable=False)
+
+    def __repr__(self):
+        return f'<Item: {self.mood}, Writing: {self.writing}>'
+
 
 #Add a new user to the database
 @app.route('/api/registration', methods=['POST'])
@@ -71,8 +79,6 @@ def update_user(user_id):
         data = request.get_json()
         if 'username' in data:
             user.username = data['username']
-        #if 'mood' in data:
-            #user.mood = data['mood']
         if 'email' in data:
             user.email = data['email']
         if 'password' in data:
@@ -104,18 +110,11 @@ def get_user(user_id):
             "user_id": user.id,
             "email": user.email,
             "username": user.username,
-            #"mood": user.mood
+            "mood": user.mood,
+            "writing": user.writing
         })
     else:
         return jsonify({"error": "User not found"}), 404
-
-'''
-#Retrieve data / Testing purposes
-@app.route('/api/data', methods=['GET'])
-def get_data():
-    items = [{'id': 1, 'name': 'Item 1'}, {'id': 2, 'name': 'Item 2'}]
-    return jsonify({'data': items})
-    '''
 
 #Login endpoint
 @app.route('/api/login', methods=['POST'])
@@ -123,8 +122,27 @@ def login():
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
     if user and checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
-        return jsonify({"message": "Login successful"}), 200
+        return jsonify({"message": "Login successful", "user_id": user.id}), 200
     return jsonify({"message": "Invalid credentials"}), 400
 
+#Add mood and writing to the database in the 'data' endpoint.
+@app.route('/api/data', methods=['POST'])
+def add_item():
+    data = request.get_json()
+    mood = data.get('mood')
+    writing = data.get('writing')
+
+    if not writing:
+        return jsonify({"error": "Writing is required"}), 400
+    if not mood:
+        return jsonify({"error": "Mood is required"}), 400
+
+    new_item = Item(mood=mood, writing=writing)
+    db.session.add(new_item)
+    db.session.commit()
+
+    return jsonify({"message": "Item added successfully"}), 200
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='localhost', port=5000, debug=True)
