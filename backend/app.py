@@ -31,6 +31,9 @@ def add_user():
     if 'id' not in data or 'username' not in data or 'mood' not in data:
         return jsonify({"error": "Missing required fields"}), 400
 
+    if not data['id']:
+        return jsonify({"error": "Invalid id"}), 400
+
     new_user = User(id=data['id'], username=data['username'], mood=data['mood'])
     db.session.add(new_user)
     db.session.commit()
