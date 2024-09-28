@@ -49,7 +49,15 @@ function fetchapi(){
                 body: JSON.stringify({username, password})
             });
             const data = await response.json();
-        }
+
+            if (response.ok) {
+                console.log(data.message);
+                setlogin(true);
+              } else {
+                console.error(data.message);
+              }
+            }
+
         catch(error){
             console.log("error logging in:", error)
     }
