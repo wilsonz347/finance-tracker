@@ -148,6 +148,7 @@ def login():
         return jsonify({"message": "Login successful", "user_id": user.id}), 200
     return jsonify({"message": "Invalid credentials"}), 400
 
+<<<<<<< HEAD
 
 #check this code cause I paste it from claude :)
 @app.route('/api/journal', methods=['POST'])
@@ -165,6 +166,9 @@ def add_journal_entry():
 
     return jsonify({"message": "Journal entry added successfully"}), 200
 
+=======
+'''
+>>>>>>> af7f0085507bf24deef2c74849bef4a56b0aaa76
 #Add mood and writing to the database in the 'data' endpoint.
 @app.route('/api/data', methods=['POST'])
 def add_item():
@@ -182,6 +186,39 @@ def add_item():
     db.session.commit()
 
     return jsonify({"message": "Item added successfully"}), 201
+'''
+
+#Add mood to the database
+@app.route('/api/mood/<user_id>', methods=['POST'])
+def add_mood(user_id):
+    data = request.get_json()
+    mood = data.get('mood')
+
+    if not mood:
+        return jsonify({"error": "Mood is required"}), 400
+
+    # Create a new mood item
+    new_item = Item(mood=mood, writing = "", user_id=user_id)
+    db.session.add(new_item)
+    db.session.commit()
+
+    return jsonify({"message": "Mood added successfully"}), 201
+
+# Add writing to the database
+@app.route('/api/writing/<user_id>', methods=['POST'])
+def add_writing(user_id):
+    data = request.get_json()
+    writing = data.get('writing')
+
+    if not writing:
+        return jsonify({"error": "Writing is required"}), 400
+
+    # Create a new writing item
+    new_item = Item(writing=writing, mood = "", user_id=user_id)
+    db.session.add(new_item)
+    db.session.commit()
+
+    return jsonify({"message": "Writing added successfully"}), 201
 
 @app.errorhandler(Exception)
 def handle_exception(e):
