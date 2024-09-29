@@ -7,7 +7,7 @@ import random
 
 #Create flask
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 #Setup database URI to use SQLite database, create database called users.db
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
@@ -151,6 +151,13 @@ def add_item():
 
     return jsonify({"message": "Item added successfully"}), 200
 
+@app.errorhandler(Exception)
+def handle_exception(e):
+    response = {
+        "error": str(e),
+        "message": "An internal error occurred."
+    }
+    return jsonify(response), 500
 
 if __name__ == '__main__':
     app.run(host='localhost', port=5000, debug=True)
