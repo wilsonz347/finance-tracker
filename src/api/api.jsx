@@ -1,82 +1,37 @@
-//will need to update the endpoints
-import react, { useState } from "react";
-function FetchApi(){
-    const [data, setData] = useState([]);
-    const [newItem, setNewItem] = useState('');
-    const [loggedIn, setLogin] = useState(false);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [userId, setUserId] = useState('');
+// used axios
+import axios from "axios";
 
-    useEffect(() => {
-    if (loggedIn && userId) {
-        FetchData();
-    }}, [loggedIn, userId]);
+const API_URL = "http://localhost:5000/api";
 
-    const FetchData = async () => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/data/${userId}`);
-            const jsonData = await response.json();
-            if (response.ok) {
-                setData(jsonData);
-            } else {
-                console.error(jsonData.error);
-            }
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-    };
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-    const postData = async () => {
-        try {
-          const response = await fetch('http://localhost:5000/api/data', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ mood: "Your mood here", writing: newItem })
-          });
-    
-          if (response.ok) {
-            console.log('item added');
-            setNewItem('');
-            FetchData();
-          } else {
-            console.error('Error adding item');
-          }
-        } catch (error) {
-          console.error('Error posting data:', error);
-        }
-      };
+export const login = (username, password) => {
+  return api.post("/login", { username, password });
+};
 
-    const handleLogin = async () => {
-        try {
-            const response = await fetch('http://localhost:5000/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({username, password})
-            });
-            const data = await response.json();
+export const register = (username, password, email) => {
+  return api.post("/registration", { username, password, email });
+};
 
-            if (response.ok) {
-                console.log(data.message);
-                setLogin(true);
-                setUserId(data.user_id);
-              } else {
-                console.error(data.message);
-              }
-            }
+export const getUserData = (userId) => {
+  return api.get(`/data/${userId}`);
+};
 
-        catch (error){
-            console.log("error logging in:", error)
-    }
+export const addMoodEntry = (mood, writing) => {
+  return api.post("/data", { mood, writing });
+};
 
-    };
-    return (
-        console.log("you've logged in..")
-    );
-}
+export const updateUser = (userId, userData) => {
+  return api.put(`/update_user/${userId}`, userData);
+};
 
-export default FetchApi;
+export const deleteUser = (userId) => {
+  return api.delete(`/delete_user/${userId}`);
+};
+
+export default api;
