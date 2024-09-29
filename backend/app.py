@@ -4,19 +4,49 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import request
 from bcrypt import gensalt, hashpw, checkpw
 import random
+import os
 
-#Create flask
+# Create Flask app
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-#Setup database URI to use SQLite database, create database called users.db
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+# Check if the 'users.db' file exists
+if not os.path.exists('users.db'):
+    # Setup database URI to use SQLite database
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-#Create tables if they don't exist
-with app.app_context():
-    db.create_all()
+    # Initialize the SQLAlchemy instance
+    db = SQLAlchemy(app)
+
+    # Define the User model
+    class User(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        username = db.Column(db.String(30), unique=True, nullable=False)
+        password = db.Column(db.String(128), nullable=False)
+        email = db.Column(db.String(128), nullable=False)
+
+        def __repr__(self):
+            return f'<ID: {self.id}, User: {self.username}, Email: {self.email}>'
+
+    # Define the Item model
+    class Item(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        mood = db.Column(db.String(30), nullable=False)
+        writing = db.Column(db.Text, nullable=False)
+
+        def __repr__(self):
+            return f'<Item: {self.mood}, Writing: {self.writing}>'
+
+    # Create the database and tables
+    with app.app_context():
+        db.create_all()
+
+else:
+    # Initialize the SQLAlchemy instance if the database already exists
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db = SQLAlchemy(app)
 
 
 def generate_unique_id():
@@ -24,26 +54,6 @@ def generate_unique_id():
         user_id = str(random.randint(10000, 99999))  # Generate a random 5-digit number
         if not User.query.filter_by(id=user_id).first():
             return user_id
-
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(30), unique=True, nullable=False)
-    password = db.Column(db.String(128), nullable=False)
-    email = db.Column(db.String(128), nullable=False)
-
-    def __repr__(self):
-        return f'<ID: {self.id}, User: {self.username}, Email: {self.email}>'
-
-
-class Item(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    mood = db.Column(db.String(30), nullable=False)
-    writing = db.Column(db.Text, nullable=False)
-
-    def __repr__(self):
-        return f'<Item: {self.mood}, Writing: {self.writing}>'
-
 
 #Add a new user to the database
 @app.route('/api/registration', methods=['POST'])
