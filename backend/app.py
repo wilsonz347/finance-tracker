@@ -32,6 +32,7 @@ if not os.path.exists('users.db'):
     # Define the Item model
     class Item(db.Model):
         id = db.Column(db.Integer, primary_key=True)
+        user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
         mood = db.Column(db.String(30), nullable=False)
         writing = db.Column(db.Text, nullable=False)
 
@@ -154,17 +155,18 @@ def add_item():
     data = request.get_json()
     mood = data.get('mood')
     writing = data.get('writing')
+    user_id = data.get('user_id')
 
     if not writing:
         return jsonify({"error": "Writing is required"}), 400
     if not mood:
         return jsonify({"error": "Mood is required"}), 400
 
-    new_item = Item(mood=mood, writing=writing)
+    new_item = Item(mood=mood, writing=writing, user_id=user_id)
     db.session.add(new_item)
     db.session.commit()
 
-    return jsonify({"message": "Item added successfully"}), 200
+    return jsonify({"message": "Item added successfully"}), 201
 
 @app.errorhandler(Exception)
 def handle_exception(e):
