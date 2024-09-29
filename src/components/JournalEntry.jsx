@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { addMoodEntry } from "../api/api";
+import { addJournalEntry } from "../api/api";
 
 export default function JournalEntry() {
   const [title, setTitle] = useState("");
@@ -12,7 +12,7 @@ export default function JournalEntry() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addMoodEntry(title, content);
+      await addJournalEntry(title, content);
       console.log("Journal entry submitted:", { title, content });
       setTitle("");
       setContent("");

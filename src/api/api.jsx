@@ -26,6 +26,10 @@ export const addMoodEntry = (mood, writing) => {
   return api.post("/data", { mood, writing });
 };
 
+export const addJournalEntry = (title, content) => {
+  return api.post("/journal", { title, content });
+};
+
 export const updateUser = (userId, userData) => {
   return api.put(`/update_user/${userId}`, userData);
 };

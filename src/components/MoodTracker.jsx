@@ -17,7 +17,7 @@ export default function MoodTracker() {
   const handleSubmit = async () => {
     if (selectedMood !== null) {
       try {
-        await addMoodEntry(moods[selectedMood].label, "");
+        await addMoodEntry(moods[selectedMood].label, "mood");
         console.log("Mood submitted:", moods[selectedMood].label);
         setSelectedMood(null);
       } catch (error) {

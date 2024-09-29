@@ -149,6 +149,22 @@ def login():
     return jsonify({"message": "Invalid credentials"}), 400
 
 
+#check this code cause I paste it from claude :)
+@app.route('/api/journal', methods=['POST'])
+def add_journal_entry():
+    data = request.get_json()
+    title = data.get('title')
+    content = data.get('content')
+
+    if not title or not content:
+        return jsonify({"error": "Title and content are required"}), 400
+
+    new_entry = Item(mood='Journal', writing=f"Title: {title}\n\n{content}")
+    db.session.add(new_entry)
+    db.session.commit()
+
+    return jsonify({"message": "Journal entry added successfully"}), 200
+
 #Add mood and writing to the database in the 'data' endpoint.
 @app.route('/api/data', methods=['POST'])
 def add_item():
