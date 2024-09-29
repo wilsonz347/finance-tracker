@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { addMoodEntry } from "../api/api";
 
 const moods = [
   { emoji: "😢", label: "Terrible" },
@@ -13,10 +14,15 @@ const moods = [
 export default function MoodTracker() {
   const [selectedMood, setSelectedMood] = useState(null);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedMood !== null) {
-      console.log("Mood submitted:", moods[selectedMood].label);
-      // Here we would send this data to the backend
+      try {
+        await addMoodEntry(moods[selectedMood].label, "");
+        console.log("Mood submitted:", moods[selectedMood].label);
+        setSelectedMood(null);
+      } catch (error) {
+        console.error("Error submitting mood:", error);
+      }
     }
   };
 

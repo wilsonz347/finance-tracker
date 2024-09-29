@@ -10,14 +10,27 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { login, register } from "../api/api";
 
-export default function LoginSignupForm() {
+export default function LoginSignupForm({ onLoginSuccess }) {
   const [isLogin, setIsLogin] = useState(true);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Handle form submission here
-    console.log("Form submitted");
+    try {
+      if (isLogin) {
+        const response = await login(username, password);
+        onLoginSuccess(response.data.user_id);
+      } else {
+        await register(username, password, email);
+        setIsLogin(true);
+      }
+    } catch (error) {
+      console.error("Error:", error.response?.data?.error || error.message);
+    }
   };
 
   return (
@@ -35,17 +48,33 @@ export default function LoginSignupForm() {
           <div className="grid w-full items-center gap-4">
             {!isLogin && (
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" placeholder="John Doe" />
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  placeholder="m@example.com"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
             )}
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" placeholder="m@example.com" type="email" />
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                placeholder="johndoe"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" />
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
           </div>
           <Button className="w-full mt-4" type="submit">
