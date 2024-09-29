@@ -18,11 +18,13 @@ db = SQLAlchemy(app)
 with app.app_context():
     db.create_all()
 
+
 def generate_unique_id():
     while True:
         user_id = str(random.randint(10000, 99999))  # Generate a random 5-digit number
         if not User.query.filter_by(id=user_id).first():
             return user_id
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -32,6 +34,7 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<ID: {self.id}, User: {self.username}, Email: {self.email}>'
+
 
 class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -71,6 +74,7 @@ def registration():
     db.session.commit()
     return jsonify({"message": "User added successfully"}), 200
 
+
 #Update a user in the database
 @app.route('/api/update_user/<user_id>', methods=['PUT'])
 def update_user(user_id):
@@ -89,6 +93,7 @@ def update_user(user_id):
     else:
         return jsonify({"error": "User not found"}), 404
 
+
 #Delete a user from the database
 @app.route('/api/delete_user/<user_id>', methods=['DELETE'])
 def delete_user(user_id):
@@ -99,6 +104,7 @@ def delete_user(user_id):
         return jsonify({"message": "User deleted successfully"}), 200
     else:
         return jsonify({"error": "User not found"}), 404
+
 
 #Retrieve user information from database
 @app.route('/api/data/<user_id>', methods=['GET'])
@@ -116,6 +122,7 @@ def get_user(user_id):
     else:
         return jsonify({"error": "User not found"}), 404
 
+
 #Login endpoint
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -124,6 +131,7 @@ def login():
     if user and checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
         return jsonify({"message": "Login successful", "user_id": user.id}), 200
     return jsonify({"message": "Invalid credentials"}), 400
+
 
 #Add mood and writing to the database in the 'data' endpoint.
 @app.route('/api/data', methods=['POST'])
