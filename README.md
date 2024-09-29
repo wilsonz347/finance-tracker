@@ -32,4 +32,4 @@ python app.py
 - Finalizing API integrations for mood and journaling
 - Implementing Wolfram for producing trendlines and other visualization
 
-### Unfortunately, we weren't able to finish the integration due to time constraints and the differences in timezone.
+Unfortunately, we weren't able to finish the integration due to time constraints and the differences in timezone.
