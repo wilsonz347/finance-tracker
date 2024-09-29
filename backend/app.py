@@ -130,8 +130,8 @@ def get_user(user_id):
             "user_id": user.id,
             "email": user.email,
             "username": user.username,
-            "mood": user.mood,
-            "writing": user.writing
+            #"mood": user.mood,
+            #"writing": user.writing
         })
     else:
         return jsonify({"error": "User not found"}), 404
