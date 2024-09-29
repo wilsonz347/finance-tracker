@@ -5,9 +5,9 @@ The Mental Health Tracker is an application designed to help teenagers monitor t
 
 **Features**
 User Authentication: Secure login and registration to protect user data.
-Mood Tracking (Ongoing): Add, update, and remove mood entries.
-Journal Writing (Ongoing): A space for users to write freely and reflect on their feelings.
-Trend Analysis (Planned): Utilize Wolfram to display trendlines related to users' moods and journal entries.
+Mood Tracking: Add, update, and remove mood entries.
+Journal Writing: A space for users to write freely and reflect on their feelings.
+Trend Analysis: Utilize Wolfram to display trendlines related to users' moods and journal entries.
 
 Frontend: React, Tailwindcss
 Backend: Python, Flask
@@ -31,3 +31,5 @@ python app.py
 **Current Progress**
 - Finalizing API integrations for mood and journaling
 - Implementing Wolfram for producing trendlines and other visualization
+
+### Unfortunately, we weren't able to finish the integration due to time constraints and the differences in timezone.
