@@ -126,12 +126,13 @@ def get_user(user_id):
     # Check if the user_id exists in our data
     user = User.query.get(user_id)
     if user:
+        latest_item = Item.query.order_by(Item.id.desc()).first()
         return jsonify({
             "user_id": user.id,
             "email": user.email,
             "username": user.username,
-            #"mood": user.mood,
-            #"writing": user.writing
+            "latest_mood": latest_item.mood if latest_item else None,
+            "latest_writing": latest_item.writing if latest_item else None
         })
     else:
         return jsonify({"error": "User not found"}), 404

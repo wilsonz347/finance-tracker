@@ -85,7 +85,10 @@ export default function App() {
         </header>
         <main className="container mx-auto p-4">
           <Routes>
-            <Route path="/" element={<Dashboard user={user} />} />
+            <Route
+              path="/"
+              element={<Dashboard userId={localStorage.getItem("userId")} />}
+            />
             <Route path="/mood" element={<MoodTracker />} />
             <Route path="/journal" element={<JournalEntry />} />
             <Route path="/settings" element={<Settings user={user} />} />
