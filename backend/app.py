@@ -32,9 +32,10 @@ if not os.path.exists('users.db'):
     # Define the Item model
     class Item(db.Model):
         id = db.Column(db.Integer, primary_key=True)
-        #user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+        user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
         mood = db.Column(db.String(30), nullable=False)
         writing = db.Column(db.Text, nullable=False)
+        title = db.Column(db.String(128), nullable=False)
 
         def __repr__(self):
             return f'<Item: {self.mood}, Writing: {self.writing}>'
@@ -148,11 +149,9 @@ def login():
         return jsonify({"message": "Login successful", "user_id": user.id}), 200
     return jsonify({"message": "Invalid credentials"}), 400
 
-<<<<<<< HEAD
 
-#check this code cause I paste it from claude :)
-@app.route('/api/journal', methods=['POST'])
-def add_journal_entry():
+@app.route('/api/journal/<user_id>', methods=['POST'])
+def add_journal_entry(user_id):
     data = request.get_json()
     title = data.get('title')
     content = data.get('content')
@@ -160,33 +159,11 @@ def add_journal_entry():
     if not title or not content:
         return jsonify({"error": "Title and content are required"}), 400
 
-    new_entry = Item(mood='Journal', writing=f"Title: {title}\n\n{content}")
+    new_entry = Item(mood='Journal', writing=f"Title: {title}\n\n{content}", user_id=user_id)
     db.session.add(new_entry)
     db.session.commit()
 
     return jsonify({"message": "Journal entry added successfully"}), 200
-
-=======
-'''
->>>>>>> af7f0085507bf24deef2c74849bef4a56b0aaa76
-#Add mood and writing to the database in the 'data' endpoint.
-@app.route('/api/data', methods=['POST'])
-def add_item():
-    data = request.get_json()
-    mood = data.get('mood')
-    writing = data.get('writing')
-
-    if not writing:
-        return jsonify({"error": "Writing is required"}), 400
-    if not mood:
-        return jsonify({"error": "Mood is required"}), 400
-
-    new_item = Item(mood=mood, writing=writing)
-    db.session.add(new_item)
-    db.session.commit()
-
-    return jsonify({"message": "Item added successfully"}), 201
-'''
 
 #Add mood to the database
 @app.route('/api/mood/<user_id>', methods=['POST'])
