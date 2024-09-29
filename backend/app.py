@@ -58,31 +58,35 @@ def generate_unique_id():
 #Add a new user to the database
 @app.route('/api/registration', methods=['POST'])
 def registration():
-    data = request.get_json()
+    try:
+        data = request.get_json()
 
-    required_fields = ['username', 'password', 'email']
-    for field in required_fields:
-        if field not in data:
-            return jsonify({"error": f"Missing required field: {field}"}), 400
+        required_fields = ['username', 'password', 'email']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Missing required field: {field}"}), 400
 
-    if User.query.filter_by(username=data['username']).first():
-        return jsonify({"error": "Username already exists"}), 400
+        if User.query.filter_by(username=data['username']).first():
+            return jsonify({"error": "Username already exists"}), 400
 
-    new_user_id = generate_unique_id()
+        new_user_id = generate_unique_id()
 
     # Hash the password before storing it in the database
-    hashed_password = hashpw(data['password'].encode('utf-8'), gensalt()).decode('utf-8')
+        hashed_password = hashpw(data['password'].encode('utf-8'), gensalt()).decode('utf-8')
 
-    new_user = User(
-        id = new_user_id,
-        username=data['username'],
-        password=hashed_password,
-        email=data['email']
-    )
+        new_user = User(
+            id = new_user_id,
+            username=data['username'],
+            password=hashed_password,
+            email=data['email']
+        )
 
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({"message": "User added successfully"}), 200
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({"message": "User added successfully"}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e), "message": "An internal error occurred."}), 500
 
 
 #Update a user in the database
@@ -168,6 +172,10 @@ def handle_exception(e):
         "message": "An internal error occurred."
     }
     return jsonify(response), 500
+
+@app.route('/')
+def home():
+    return 'Server is running!'
 
 if __name__ == '__main__':
     app.run(host='localhost', port=5000, debug=True)
